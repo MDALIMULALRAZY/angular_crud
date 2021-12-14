@@ -1,19 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, throwError, of } from 'rxjs';
+import { catchError, tap, map} from 'rxjs/operators';
 import { Post } from './post';
+
 @Injectable({
   providedIn: 'root'
 })
 
 export class PostService {
   private apiURL = "https://jsonplaceholder.typicode.com";
+  private searchURL = "https://jsonplaceholder.typicode.com/posts";
   httpOptions = {
     headers: new HttpHeaders({
       'Content-Type': 'application/json'
     })
   }
+  
   constructor(private httpClient: HttpClient) { }
   getAll(): Observable<Post[]> {
     return this.httpClient.get<Post[]>(this.apiURL + '/posts/')
@@ -69,7 +72,23 @@ export class PostService {
       )
 
   }
-
+  searchPost(typedString: string): Observable<Post[]>{
+    if (!typedString.trim){
+        return of([]);
+    }
+     return this.httpClient.get<Post[]>(`${this.searchURL}?title=${typedString}`).pipe(
+      tap(foundedPosts => console.log(`posts are = ${JSON.stringify(foundedPosts)}`)),
+      map((posts: any) => {
+        return posts.map((post: any) => { 
+          return {
+            title: post.title, 
+            body: post.body
+          }
+        })
+      }),
+      catchError(this.errorHandler)
+     )
+    }
 
   errorHandler(error:any) {
 

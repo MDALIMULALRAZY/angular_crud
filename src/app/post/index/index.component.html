@@ -4,6 +4,38 @@
   <a href="#" routerLink="/post/create/" class="btn btn-success"
     >Create New Post</a
   >
+  <div class="container mt-3 mb-3">
+    <div class="row">
+      <div class="col-4">
+        <!-- <div class="search-hero">
+          <input
+            class="form-control"
+            type="text"
+            name="search"
+            [(ngModel)]="searchText"
+            autocomplete="off"
+            placeholder="&#61442;  Start searching for a post"
+            #searchBox (keyup)="search(searchBox.value)"
+          />
+        </div> -->
+        <div class="search-hero">
+            <input
+              class="form-control"
+              type="text"
+              name="title"
+              [(ngModel)]="title"
+              (ngModelChange)="Search()"
+              autocomplete="off"
+              placeholder="&#61442;  Start searching for a post"
+             
+            />
+          </div>
+      </div>
+    </div>
+  </div>
+
+
+
 
   <table class="table table-bordered">
     <tr>
@@ -16,7 +48,11 @@
       <th width="220px">Action</th>
     </tr>
 
-    <tr *ngFor="let post of posts">
+    <tr
+    
+      *ngFor="
+        let post of posts | slice: curPage * pageSize - pageSize:curPage * pageSize"
+    >
       <td>{{ post.id }}</td>
 
       <td>{{ post.title }}</td>
@@ -47,5 +83,19 @@
         </button>
       </td>
     </tr>
+   
   </table>
+ 
+  <p class="pagination">
+    <button [disabled]="curPage == 1" (click)="curPage = curPage - 1">
+      PREV
+    </button>
+    <span>Page {{ curPage }} of {{ numberOfPages() }}</span>
+    <button
+      [disabled]="curPage >= posts.length / pageSize"
+      (click)="curPage = curPage + 1"
+    >
+      NEXT
+    </button>
+  </p>
 </div>
